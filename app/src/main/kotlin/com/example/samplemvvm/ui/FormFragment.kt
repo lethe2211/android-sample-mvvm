@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
 import com.example.samplemvvm.R
+import com.example.samplemvvm.viewmodel.FormViewModel
 
 class FormFragment : Fragment(R.layout.form_fragment) {
 

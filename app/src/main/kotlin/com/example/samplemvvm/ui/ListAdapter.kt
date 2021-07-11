@@ -8,9 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.samplemvvm.R
 import com.example.samplemvvm.domain.valueobject.RepoList
 
-class ListAdapter(
-    private val repoList: RepoList
-) : RecyclerView.Adapter<ListAdapter.ViewHolder>() {
+class ListAdapter() : RecyclerView.Adapter<ListAdapter.ViewHolder>() {
+    private var repoList = RepoList(listOf())
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val repoTitleTextView: TextView
@@ -36,5 +35,10 @@ class ListAdapter(
 
     override fun getItemCount(): Int {
         return repoList.size()
+    }
+
+    fun setRepoList(repoList: RepoList) {
+        this.repoList = repoList
+        notifyDataSetChanged()
     }
 }
