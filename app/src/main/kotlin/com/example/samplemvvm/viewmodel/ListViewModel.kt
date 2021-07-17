@@ -1,32 +1,57 @@
 package com.example.samplemvvm.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.example.samplemvvm.domain.valueobject.RepoList
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import com.example.samplemvvm.api.APIResult
+import com.example.samplemvvm.repository.RepoRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
-class ListViewModel : ViewModel() {
+@ExperimentalCoroutinesApi
+class ListViewModel(
+        private val repoRepository: RepoRepository
+) : ViewModel() {
 
-    // TODO: It will be the value from the API
-    private val _repoList = MutableStateFlow(RepoList(
-        listOf(
-            RepoList.Element(
-                "Hoge",
-                "1"
-            ),
-            RepoList.Element(
-                "Fuga",
-                "2"
-            ),
-            RepoList.Element(
-                "Piyo",
-                "3"
-            )
-        )
-    ))
-    val repoList = _repoList.asStateFlow()
+    private val submitEvent = MutableSharedFlow<Unit>()
 
-    fun setRepoList(repoList: RepoList) {
-        _repoList.value = repoList
+    private val apiResult = submitEvent
+            .map { "Google" }
+            .flatMapLatest {
+                val response = repoRepository.findRepoListByUserName(it)
+//                println("apiResult: $response")
+                response
+            }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, APIResult.Loading)
+
+
+    val repoList = apiResult
+            .map {
+//                println("repoList: ${it.valueOrNull}")
+                it.valueOrNull.orEmpty()
+            }
+
+    init {
+        viewModelScope.launch {
+            submitEvent.emit(Unit)
+        }
+    }
+
+    fun submit() {
+        viewModelScope.launch {
+            submitEvent.emit(Unit)
+        }
+    }
+
+    class Factory(
+            private val repoRepository: RepoRepository
+    ) : ViewModelProvider.NewInstanceFactory() {
+
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            return ListViewModel(repoRepository) as T
+        }
     }
 }
+

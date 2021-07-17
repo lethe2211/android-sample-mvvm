@@ -6,10 +6,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.samplemvvm.R
-import com.example.samplemvvm.domain.valueobject.RepoList
+import com.example.samplemvvm.domain.entity.Repo
 
 class ListAdapter() : RecyclerView.Adapter<ListAdapter.ViewHolder>() {
-    private var repoList = RepoList(listOf())
+    private var repoList: List<Repo> = listOf()
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val repoTitleTextView: TextView
@@ -29,15 +29,15 @@ class ListAdapter() : RecyclerView.Adapter<ListAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.repoTitleTextView.text = repoList[position].title
+        holder.repoTitleTextView.text = repoList[position].name
         holder.repoDescriptionTextView.text = repoList[position].description
     }
 
     override fun getItemCount(): Int {
-        return repoList.size()
+        return repoList.size
     }
 
-    fun setRepoList(repoList: RepoList) {
+    fun setRepoList(repoList: List<Repo>) {
         this.repoList = repoList
         notifyDataSetChanged()
     }
