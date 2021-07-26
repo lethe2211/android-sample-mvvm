@@ -16,7 +16,7 @@ interface GithubAPI {
     ): List<Repo>
 
     companion object {
-        private const val HTTPS_API_GITHUB_URL = "https://api.github.com"
+        private const val HTTPS_API_GITHUB_URL = "https://api.github.com/"
 
         @ExperimentalSerializationApi
         fun factory(): GithubAPI {

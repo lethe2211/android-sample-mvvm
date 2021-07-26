@@ -16,6 +16,6 @@ sealed class APIResult<out T> {
     ) : APIResult<T>()
 
     val isLoading get() = this is Loading
-    val isFail get() = this is Failure
+    val isFailure get() = this is Failure
     val valueOrNull get() = (this as? Success)?.value
 }

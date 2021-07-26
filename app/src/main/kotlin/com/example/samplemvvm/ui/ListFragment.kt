@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -15,22 +16,20 @@ import com.example.samplemvvm.App
 import com.example.samplemvvm.R
 import com.example.samplemvvm.databinding.ListFragmentBinding
 import com.example.samplemvvm.repository.RepoRepository
+import com.example.samplemvvm.viewmodel.HomeViewModel
 import com.example.samplemvvm.viewmodel.ListViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.serialization.ExperimentalSerializationApi
 
+@ExperimentalSerializationApi
 @ExperimentalCoroutinesApi
 class ListFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = ListFragment()
-    }
-
-    private lateinit var repoRepository: RepoRepository
-
     // Use ViewModel KTX delegation property to instantiate ViewModel
-    private val viewModel: ListViewModel by viewModels { ListViewModel.Factory(repoRepository) }
+    private val homeViewModel: HomeViewModel by activityViewModels() { HomeViewModel.Factory((requireActivity().application as App).appContainer.repoRepository) }
+    private val viewModel: ListViewModel by viewModels()
 
     // Since the lifecycle of a View owned by a Fragment is usually longer than that of the Fragment itself
     // This will lead to a memory leak when the Fragment is destroyed.
@@ -41,12 +40,6 @@ class ListFragment : Fragment() {
 
     private lateinit var adapter: ListAdapter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        repoRepository = (requireActivity().application as App).appContainer.repoRepository
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -54,6 +47,7 @@ class ListFragment : Fragment() {
     ): View? {
         // Inflate of DataBinding object should be done in onCreateView
         _binding = DataBindingUtil.inflate(inflater, R.layout.list_fragment, container, false)
+        binding.homeViewModel = homeViewModel
         binding.viewModel = viewModel
 
         val recyclerView: RecyclerView = binding.listRecyclerView
@@ -71,11 +65,27 @@ class ListFragment : Fragment() {
         recyclerView.addItemDecoration(itemDecoration)
 
         // Observe repoList's change and update the list accordingly
-        viewModel
+        homeViewModel
             .repoList
             .onEach {
 //                println(it)
                 adapter.setRepoList(it)
+            }
+            .launchIn(lifecycleScope)
+
+        homeViewModel
+            .isLoading
+            .onEach {
+//                println("isLoading: ${homeViewModel.isLoading}")
+                binding.isLoading = it
+            }
+            .launchIn(lifecycleScope)
+
+        homeViewModel
+            .isFailure
+            .onEach {
+//                println("isFailure: ${homeViewModel.isFailure}")
+                binding.isFailure = it
             }
             .launchIn(lifecycleScope)
 

@@ -4,9 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View"/>
+
+        <variable
+            name="homeViewModel"
+            type="com.example.samplemvvm.viewmodel.HomeViewModel" />
         <variable
             name="viewModel"
             type="com.example.samplemvvm.viewmodel.ListViewModel" />
+
+        <variable
+            name="isLoading"
+            type="Boolean" />
+
+        <variable
+            name="isFailure"
+            type="Boolean" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -15,6 +28,28 @@
         android:layout_height="match_parent"
         tools:context=".ui.ListFragment">
 
+        <TextView
+            android:id="@+id/loading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/loading"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:visibility="@{isLoading ? View.VISIBLE : View.GONE}">
+        </TextView>
+
+        <TextView
+            android:id="@+id/failure"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/failure"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:visibility="@{isFailure ? View.VISIBLE : View.GONE}">
+        </TextView>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/listRecyclerView"
             android:layout_width="match_parent"
@@ -22,7 +57,8 @@
             android:layout_marginTop="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:visibility="@{(isLoading || isFailure) ? View.GONE : View.VISIBLE}">
 
         </androidx.recyclerview.widget.RecyclerView>
 
