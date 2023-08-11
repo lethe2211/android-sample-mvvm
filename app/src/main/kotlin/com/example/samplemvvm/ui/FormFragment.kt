@@ -14,6 +14,7 @@ import com.example.samplemvvm.R
 import com.example.samplemvvm.databinding.FormFragmentBinding
 import com.example.samplemvvm.viewmodel.FormViewModel
 import com.example.samplemvvm.viewmodel.HomeViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.serialization.ExperimentalSerializationApi
 
@@ -21,7 +22,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 @ExperimentalCoroutinesApi
 class FormFragment : Fragment() {
 
-    private val homeViewModel: HomeViewModel by activityViewModels() { HomeViewModel.Factory((requireActivity().application as App).appContainer.repoRepository) }
+    private val homeViewModel: HomeViewModel by activityViewModels() { HomeViewModel.Factory((requireActivity().application as App).appContainer.repoRepository, Dispatchers.Main) }
     private val viewModel: FormViewModel by viewModels()
 
     private var _binding: FormFragmentBinding? = null
@@ -31,7 +32,6 @@ class FormFragment : Fragment() {
         _binding = DataBindingUtil.inflate(inflater, R.layout.form_fragment, container, false)
         binding.homeViewModel = homeViewModel
         binding.viewModel = viewModel
-
         binding.searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             /**
              * Callback of a submit event.

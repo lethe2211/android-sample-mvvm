@@ -5,13 +5,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.samplemvvm.api.APIResult
 import com.example.samplemvvm.repository.RepoRepository
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
 class HomeViewModel(
-        private val repoRepository: RepoRepository
+        private val repoRepository: RepoRepository,
+        private val coroutineDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
     private val submitEvent = MutableSharedFlow<Unit>()
@@ -49,15 +51,15 @@ class HomeViewModel(
                 it.isFailure
             }
 
-    init {
-        viewModelScope.launch {
-            submitEvent.emit(Unit)
-        }
-    }
+//    init {
+//        viewModelScope.launch(coroutineDispatcher) {
+//            submitEvent.emit(Unit)
+//        }
+//    }
 
     fun submit() {
-        viewModelScope.launch {
-//            println("FormViewModel#submit: ${userName.value}")
+        viewModelScope.launch(coroutineDispatcher) {
+            println("FormViewModel#submit: ${_userName.value}")
             submitEvent.emit(Unit)
         }
     }
@@ -67,12 +69,13 @@ class HomeViewModel(
     }
 
     class Factory(
-            private val repoRepository: RepoRepository
+            private val repoRepository: RepoRepository,
+            private val coroutineDispatcher: CoroutineDispatcher
     ) : ViewModelProvider.NewInstanceFactory() {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return HomeViewModel(repoRepository) as T
+            return HomeViewModel(repoRepository, coroutineDispatcher) as T
         }
     }
 }

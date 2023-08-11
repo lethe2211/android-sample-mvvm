@@ -18,6 +18,7 @@ import com.example.samplemvvm.databinding.ListFragmentBinding
 import com.example.samplemvvm.repository.RepoRepository
 import com.example.samplemvvm.viewmodel.HomeViewModel
 import com.example.samplemvvm.viewmodel.ListViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -28,7 +29,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 class ListFragment : Fragment() {
 
     // Use ViewModel KTX delegation property to instantiate ViewModel
-    private val homeViewModel: HomeViewModel by activityViewModels() { HomeViewModel.Factory((requireActivity().application as App).appContainer.repoRepository) }
+    private val homeViewModel: HomeViewModel by activityViewModels() { HomeViewModel.Factory((requireActivity().application as App).appContainer.repoRepository, Dispatchers.Main) }
     private val viewModel: ListViewModel by viewModels()
 
     // Since the lifecycle of a View owned by a Fragment is usually longer than that of the Fragment itself
